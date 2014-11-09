@@ -208,8 +208,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
     @Override
     protected void onDestroy() {
         mNsdManager.tearDown();
-        if(mConnection!=null)
-            mConnection.tearDown();
+        mConnection.tearDown();
         super.onDestroy();
     }
 

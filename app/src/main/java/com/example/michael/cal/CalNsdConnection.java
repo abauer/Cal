@@ -40,7 +40,7 @@ public class CalNsdConnection {
     private ChatServer mProjectServer;
     private ChatClient mProjectClient;
 
-    private static final String TAG = "CalNsdConnection";
+    private static final String TAG = CalNsdConnection.class.getSimpleName();
 
     private Socket mSocket;
     private int mPort = -1;
@@ -52,7 +52,8 @@ public class CalNsdConnection {
 
     public void tearDown() {
         mProjectServer.tearDown();
-        mProjectClient.tearDown();
+        if(mProjectClient!=null)
+            mProjectClient.tearDown();
     }
 
     public void connectToServer(InetAddress address, int port) {
@@ -102,7 +103,6 @@ public class CalNsdConnection {
                 try {
                     mSocket.close();
                 } catch (IOException e) {
-                    // TODO(alexlucas): Auto-generated catch block
                     e.printStackTrace();
                 }
             }
@@ -126,24 +126,24 @@ public class CalNsdConnection {
         public void tearDown() {
             mThread.interrupt();
             try {
-                mServerSocket.close();
-            } catch (IOException ioe) {
+                Log.i(TAG, "ServerSocket is being closed");
+                Log.i(TAG, "Orig Port number:"+mServerSocket.getLocalPort());                       //THIS IS WHERE THE SERVER SOCKET IS CLOSED. THIS IS WHERE THE SERVER SOCKET IS CLOSED. LOOK HERE!
+                //mServerSocket.close();
+            } catch (Exception ioe) {
                 Log.e(TAG, "Error when closing server socket.");
             }
         }
 
         class ServerThread implements Runnable {
-
             @Override
             public void run() {
-
                 try {
                     // Since discovery will happen via Nsd, we don't need to care which port is
-                    // used.  Just grab an available one  and advertise it via Nsd.
+                    // used.  Just grab an available one and advertise it via Nsd.g
                     mServerSocket = new ServerSocket(0);
                     setLocalPort(mServerSocket.getLocalPort());
-
                     while (!Thread.currentThread().isInterrupted()) {
+                        Log.d(TAG, "Attempting to join Port "+mServerSocket.getLocalPort()+", which is currently "+((mServerSocket.isClosed()) ? "CLOSED" : "OPEN"));
                         Log.d(TAG, "ServerSocket Created, awaiting connection");
                         setSocket(mServerSocket.accept());
                         Log.d(TAG, "Connected.");
@@ -232,8 +232,7 @@ public class CalNsdConnection {
                             mSocket.getInputStream()));
                     while (!Thread.currentThread().isInterrupted()) {
 
-                        String messageStr = null;
-                        messageStr = input.readLine();
+                        String messageStr=input.readLine();
                         if (messageStr != null) {
                             Log.d(CLIENT_TAG, "Read from the stream: " + messageStr);
                             updateMessages(messageStr, false);
@@ -254,7 +253,7 @@ public class CalNsdConnection {
             try {
                 getSocket().close();
             } catch (IOException ioe) {
-                Log.e(CLIENT_TAG, "Error when closing server socket.");
+                Log.e(CLIENT_TAG, "Error when closing socket.");
             }
         }
 
