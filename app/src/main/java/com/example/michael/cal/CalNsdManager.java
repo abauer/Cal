@@ -20,7 +20,6 @@ public class CalNsdManager {
     public static final String SERVICE_TYPE = "_http._tcp.";
     public static final String TAG = "CalNsdManager";
     public String mServiceName = "NsdCalProject";
-    boolean registered=false;
 
     NsdServiceInfo mService;
 
@@ -136,13 +135,15 @@ public class CalNsdManager {
         serviceInfo.setPort(port);
         serviceInfo.setServiceName(mServiceName);
         serviceInfo.setServiceType(SERVICE_TYPE);
-        registered = true;
-        mNsdManager.registerService( serviceInfo, NsdManager.PROTOCOL_DNS_SD, mRegistrationListener);
+
+        mNsdManager.registerService(
+                serviceInfo, NsdManager.PROTOCOL_DNS_SD, mRegistrationListener);
 
     }
 
     public void discoverServices() {
-        mNsdManager.discoverServices(SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, mDiscoveryListener);
+        mNsdManager.discoverServices(
+                SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, mDiscoveryListener);
     }
 
     public void stopDiscovery() {
@@ -154,8 +155,7 @@ public class CalNsdManager {
     }
 
     public void tearDown() {
-        if(registered)
-            mNsdManager.unregisterService(mRegistrationListener);
+        mNsdManager.unregisterService(mRegistrationListener);
     }
 
 }
