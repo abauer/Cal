@@ -152,8 +152,11 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();                                                                  // Handle action bar item clicks here. The action bar will
-        switch (id){                                                                                // automatically handle clicks on the Home/Up button, so long
-            case R.id.action_settings:                                                              // as you specify a parent activity in AndroidManifest.xml.
+        //if (id == R.id.action_settings) {                                                           // automatically handle clicks on the Home/Up button, so long
+        //    return true;                                                                            // as you specify a parent activity in AndroidManifest.xml.
+        //}
+        switch (id){
+            case R.id.action_settings:
                 return true;
             case R.id.action_advertise:
                 do_advertise();
@@ -168,15 +171,16 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
                 mConnection.sendMessage(GoogleAccountEmail);
                 return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
     public void do_advertise(){
         if(mConnection.getLocalPort() > -1) {
             mNsdManager.registerService(mConnection.getLocalPort());
-        }
-        else
+        } else {
             Log.d(TAG, "ServerSocket isn't bound.");
+        }
     }
     public void do_discover()
     {
@@ -190,21 +194,24 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
             mConnection.connectToServer(service.getHost(),
                     service.getPort());
             mConnection.sendMessage(GoogleAccountEmail);
-        }
-        else
+
+        } else {
             Log.d(TAG, "No service to connect to!");
+        }
     }
     @Override
     protected void onResume(){
         super.onResume();
-        if(mNsdManager != null)
+        if(mNsdManager != null){
             mNsdManager.discoverServices();
+        }
     }
 
     @Override
     protected void onPause(){
-        if(mNsdManager != null)
+        if(mNsdManager != null){
             mNsdManager.stopDiscovery();
+        }
         super.onPause();
     }
 
@@ -226,9 +233,11 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
         Context context = getApplicationContext();
         String walkingState;
         if (isWalking)
+        {
             walkingState = "walking!";
-        else
+        } else {
             walkingState = "Not Walking!";
+        }
         Toast toast = Toast.makeText(context, walkingState , Toast.LENGTH_SHORT );
         toast.show();
 
