@@ -171,24 +171,21 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
         return super.onOptionsItemSelected(item);
     }
 
-    public void do_advertise(){
+    public void do_advertise() {
         if(mConnection.getLocalPort() > -1) {
             mNsdManager.registerService(mConnection.getLocalPort());
         }
         else
             Log.d(TAG, "ServerSocket isn't bound.");
     }
-    public void do_discover()
-    {
+    public void do_discover() {
         mNsdManager.discoverServices();
     }
-    public void do_connect()
-    {
+    public void do_connect() {
         NsdServiceInfo service = mNsdManager.getChosenServiceInfo();
         if (service != null) {
             Log.d(TAG, "Connecting. Sending " + GoogleAccountEmail);
-            mConnection.connectToServer(service.getHost(),
-                    service.getPort());
+            mConnection.connectToServer(service.getHost(), service.getPort());
             mConnection.sendMessage(GoogleAccountEmail);
         }
         else
@@ -211,7 +208,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
     @Override
     protected void onDestroy() {
         mNsdManager.tearDown();
-        mConnection.tearDown();
+        if(mConnection!=null)
+            mConnection.tearDown();
         super.onDestroy();
     }
 
