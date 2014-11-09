@@ -63,8 +63,7 @@ public class CalSqlAdapter {
         return id;
     }
 
-    public int getDbSize() {
-        SQLiteDatabase db = helper.getReadableDatabase();
+    public int getDbSize(SQLiteDatabase db) {
         Cursor c = db.rawQuery("SELECT COUNT(*) FROM " + CalSqlHelper.TABLE_NAME, null);
         int size = -1;
         if (c.moveToFirst()) {
@@ -74,10 +73,12 @@ public class CalSqlAdapter {
         return size;
     }
 
-    public void delDbData() {
+    public int delDbData() {
         SQLiteDatabase db = helper.getWritableDatabase();
+        int ret = getDbSize(db);
         db.execSQL("DELETE FROM " + CalSqlHelper.TABLE_NAME);
         db.close();
+        return ret;
     }
     public CalSQLObj getSingleData(long timestamp) {
         SQLiteDatabase db = helper.getReadableDatabase();

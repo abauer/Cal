@@ -9,7 +9,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.opengl.Visibility;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Vibrator;
@@ -30,7 +30,6 @@ public class TrainingActivity extends Activity{
 
     private static CalSqlAdapter calSqlAdapter;
     NthSense sensorService;
-    private CharSequence mTitle;
     Timer T=new Timer();
     TextView text,second;
     Button button;
@@ -40,6 +39,7 @@ public class TrainingActivity extends Activity{
     boolean hideImage=true;
     int clickCount = 0;
     Vibrator v;
+    boolean first = false;
 
     public static CalSqlAdapter getAdapter(){
         return calSqlAdapter;
@@ -56,8 +56,9 @@ public class TrainingActivity extends Activity{
             startTime = s.getLong("startTime");
             currTime = s.getLong("currTime");
             hideImage = s.getBoolean("hideImage");
-            Log.i("HELPWANTED",""+hideImage);
+            first = s.getBoolean("first");
         }
+        doOneTime();
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         setContentView(R.layout.activity_training);
         text = (TextView) findViewById(R.id.timeCounter);
@@ -67,7 +68,6 @@ public class TrainingActivity extends Activity{
         Intent intent = new Intent(this, NthSense.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         time = new DecimalFormat(".#");
-        mTitle = getTitle();
         if(hideImage) {
             image.setVisibility(View.GONE);
             button.setVisibility(View.VISIBLE);
@@ -92,32 +92,23 @@ public class TrainingActivity extends Activity{
         }
         else
             text.setText("Press the Start button to continue \n               to the main app");
-
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 TrainingActivity.this.onClick();
             }
         });
-
         T.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                runOnUiThread(new Runnable()
-                {
+                runOnUiThread(new Runnable() {
                     @Override
-                    public void run()
-                    {
+                    public void run() {
                         currTime=System.currentTimeMillis();
                         if(clickCount==1) {
                             text.setText("Time: " + time.format((float) (currTime - startTime) / 1000) + "s");
                             if ((currTime - startTime) > 10000) {
-                                sensorService.set_is_takingData(false);
-                                image.setVisibility(View.GONE);
-                                hideImage=true;
-                                clickCount++;
-                                button.setVisibility(View.VISIBLE);
-                                v.vibrate(500);
+                                onTimeComplete();
                                 text.setText("Press the start button and place the \n      phone in your pocket for 15s.");
                                 second.setText("(Phone will vibrate on completion)");
                             }
@@ -125,13 +116,7 @@ public class TrainingActivity extends Activity{
                         else if(clickCount==3) {
                             text.setText("Time: "+time.format((float)(currTime-startTime)/1000)+"s");
                             if ((currTime - startTime) > 15000) {
-                                sensorService.set_is_takingData(false);
-                                image.setVisibility(View.GONE);
-                                hideImage=true;
-                                second.setVisibility(View.VISIBLE);
-                                clickCount++;
-                                button.setVisibility(View.VISIBLE);
-                                v.vibrate(500);
+                                onTimeComplete();
                                 text.setText("Press the Start button and with the\n        phone in your pocket walk\n                  around for 10s");
                                 second.setText("(Phone will vibrate on completion)");
                             }
@@ -139,13 +124,10 @@ public class TrainingActivity extends Activity{
                         else if(clickCount==5) {
                             text.setText("Time: "+time.format((float)(currTime-startTime)/1000)+"s");
                             if ((currTime - startTime) > 10000) {
-                                sensorService.set_is_takingData(false);
                                 sensorService.set_is_walking(false);
-                                image.setVisibility(View.GONE);
-                                hideImage=true;
-                                clickCount++;
-                                button.setVisibility(View.VISIBLE);
-                                v.vibrate(500);
+                                onTimeComplete();
+                                first=true;
+                                doOneTime();
                                 text.setText("Press the Start button to continue \n               to the main app");
                             }
                         }
@@ -155,7 +137,26 @@ public class TrainingActivity extends Activity{
         }, 50, 50);
     }
 
-    public void onClick(){
+    private void doOneTime(){
+        if(first){
+            first = false;
+            SharedPreferences.Editor editor = getSharedPreferences("MyPref", 0).edit();
+            editor.putBoolean("doneTraining", true);
+            editor.commit();
+        }
+    }
+
+    private void onTimeComplete(){
+        sensorService.set_is_takingData(false);
+        image.setVisibility(View.GONE);
+        hideImage=true;
+        clickCount++;
+        button.setVisibility(View.VISIBLE);
+        v.vibrate(500);
+    }
+
+
+    private void onClick(){
         if(clickCount==0){
             image.setImageResource(R.drawable.phoneondesk);
             image.setVisibility(View.VISIBLE);
@@ -191,6 +192,7 @@ public class TrainingActivity extends Activity{
         outState.putLong("startTime", startTime);
         outState.putLong("currTime", currTime);
         outState.putBoolean("hideImage", hideImage);
+        outState.putBoolean("first", first);
     }
 
     @Override
@@ -219,16 +221,12 @@ public class TrainingActivity extends Activity{
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {
-
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             NthSense.NthBinder binder = (NthSense.NthBinder) service;
             sensorService = binder.getService();
         }
-
         @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-
-        }
+        public void onServiceDisconnected(ComponentName arg0) { }
     };
 }

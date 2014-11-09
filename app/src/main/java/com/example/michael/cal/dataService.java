@@ -38,18 +38,14 @@ public class dataService extends Service {
         }
     }
 
-    public void submitData() {
+    public int submitData() {
         CalSQLObj[] cso = calSqlAdapter.getRangeData(0, System.currentTimeMillis());                //Submits localDatabase to server
         String json = calSqlAdapter.createJSONObjWithEmail(cso).toString();
-        Log.i("DataBase", "Attempting to send "+Integer.toString(json.split("\\}").length - 1)+" entries");
         try {
             HttpResponse httpr = new PostData.PostDataTask().execute(new PostData.PostDataObj("http://grantuy.com/cal/insert.php", json)).get();
             if (httpr != null) {
-                if (httpr.getStatusLine().getStatusCode() == 200) {
-                    Log.i("DataBase", "Sending Successful");                                        //Request successful
-                    clearDatabase();
-                    return;
-                }
+                if (httpr.getStatusLine().getStatusCode() == 200)                              //Request successful
+                    return clearDatabase();
             }
             Log.i("DataBase:", "There was a problem with this HTTP requst.");                       //Request failed
 
@@ -58,12 +54,11 @@ public class dataService extends Service {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
+        return -1;
     }
 
-    public void clearDatabase(){
-        Log.i("DataBase", "SIZE "+ Integer.toString(calSqlAdapter.getDbSize()));                    //Prints size of database (rows)
-        calSqlAdapter.delDbData();                                                                  // clears local database
-        Log.i("DataBase", "Deleted");
+    public int clearDatabase(){
+        return calSqlAdapter.delDbData();
     }
 
 }
