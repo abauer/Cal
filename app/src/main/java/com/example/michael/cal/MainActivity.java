@@ -7,14 +7,22 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.nsd.NsdServiceInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
+import android.view.View;
+import android.widget.AbsoluteLayout;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import com.example.michael.cal.CalSQL.CalSqlAdapter;
@@ -154,6 +162,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
         int id = item.getItemId();                                                                  // Handle action bar item clicks here. The action bar will
         switch (id){                                                                                // automatically handle clicks on the Home/Up button, so long
             case R.id.action_settings:                                                              // as you specify a parent activity in AndroidManifest.xml.
+                showPopup();
                 return true;
             case R.id.action_advertise:
                 do_advertise();
@@ -229,5 +238,26 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
         Toast toast = Toast.makeText(context, walkingState , Toast.LENGTH_SHORT );
         toast.show();
 
+    }
+
+    private void showPopup(){
+        int a = LinearLayout.LayoutParams.WRAP_CONTENT;
+        LayoutInflater layoutInflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = layoutInflater.inflate(R.layout.popup_settings, null);
+        final PopupWindow popupWindow = new PopupWindow(popupView,a,a,true);
+        popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 40);
+        Button btnDismiss = (Button)popupView.findViewById(R.id.dismiss);
+        btnDismiss.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View v) { popupWindow.dismiss();}});
+        Button btnRetrain = (Button)popupView.findViewById(R.id.retrain);
+        btnRetrain.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor editor = getSharedPreferences("MyPref", 0).edit();
+                editor.putBoolean("doneTraining", false);
+                editor.commit();
+                popupWindow.dismiss();
+            }});
     }
 }
