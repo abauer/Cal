@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.nsd.NsdServiceInfo;
 import android.os.Bundle;
@@ -58,13 +59,15 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0);
+        if (!pref.getBoolean("doneTraining", false)) {
+            Log.i("Daniel","Should be entering Training");
+            startActivity(TrainingActivity.class);
+        }
         setContentView(R.layout.activity_main);
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getFragmentManager().findFragmentById(R.id.navigation_drawer);
+        mNavigationDrawerFragment = (NavigationDrawerFragment)getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
-        mNavigationDrawerFragment.setUp(                                                            // Set up the drawer.
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
+        mNavigationDrawerFragment.setUp(R.id.navigation_drawer,(DrawerLayout) findViewById(R.id.drawer_layout)); // Set up the drawer.
         isWalking = false;
 
         mUpdateHandler = new Handler() {
@@ -259,5 +262,12 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
                 editor.commit();
                 popupWindow.dismiss();
             }});
+    }
+
+    private void startActivity(Class c){
+        Intent intent = new Intent(this, c);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
     }
 }

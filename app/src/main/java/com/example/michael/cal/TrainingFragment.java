@@ -20,6 +20,7 @@ public class TrainingFragment extends PlaceholderFragment {
 
     private ToggleButton mTakingDataButton;
     private ToggleButton mWalkButton;
+    boolean bound = false;
 
     NthSense sensorService;
 
@@ -60,10 +61,14 @@ public class TrainingFragment extends PlaceholderFragment {
         super.onStart();
         Intent intent = new Intent(getActivity(), NthSense.class);
         getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        bound=true;
     }
 
-    public void onDestroy() {                                                                       //Michael claims "possibly dangerous" DO NOT STORE NEAR OPEN FLAMES
-        getActivity().unbindService(mConnection);
+    public void onDestroy() {
+        if(bound) {                                                                                 //Michael claims "possibly dangerous" DO NOT STORE NEAR OPEN FLAMES
+            getActivity().unbindService(mConnection);
+            bound = false;
+        }
         super.onDestroy();
     }
 
