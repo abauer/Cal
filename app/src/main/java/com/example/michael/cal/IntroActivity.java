@@ -14,11 +14,11 @@ public class IntroActivity extends Activity{
     @Override
     protected void onCreate(Bundle b){
         super.onCreate(b);
-        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0);
         if (pref.getBoolean("doneTraining", false))
-            startActivity(new Intent(this, MainActivity.class));
+            startActivity(MainActivity.class);
         else
-            startActivity(new Intent(this, TrainingActivity.class));
+            startActivity(TrainingActivity.class);
     }
 
     @Override
@@ -31,5 +31,11 @@ public class IntroActivity extends Activity{
         super.onPause();
     }
 
+    private void startActivity(Class c){
+        Intent intent = new Intent(this, c);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
+    }
 
 }

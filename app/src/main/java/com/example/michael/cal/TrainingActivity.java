@@ -154,7 +154,6 @@ public class TrainingActivity extends Activity{
         v.vibrate(500);
     }
 
-
     private void onClick(){
         if(clickCount==0){
             image.setImageResource(R.drawable.phoneondesk);
@@ -175,10 +174,8 @@ public class TrainingActivity extends Activity{
             sensorService.set_is_takingData(true);
             sensorService.set_is_walking(true);
         }
-        else if(clickCount==6){
-            Intent i = new Intent(TrainingActivity.this, MainActivity.class);
-            startActivity(i);
-        }
+        else if(clickCount==6)
+            startActivity(MainActivity.class);
         button.setVisibility(View.GONE);
         clickCount++;
         startTime=System.currentTimeMillis();
@@ -186,7 +183,7 @@ public class TrainingActivity extends Activity{
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);                                             //converts boolean to 1 or 0 for storage in Array
+        super.onSaveInstanceState(outState);                                                        //converts boolean to 1 or 0 for storage in Array
         outState.putInt("clickCount", clickCount);
         outState.putLong("startTime", startTime);
         outState.putLong("currTime", currTime);
@@ -228,4 +225,11 @@ public class TrainingActivity extends Activity{
         @Override
         public void onServiceDisconnected(ComponentName arg0) { }
     };
+
+    private void startActivity(Class c){
+        Intent intent = new Intent(this, c);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
+    }
 }
