@@ -37,6 +37,7 @@ public class NthSense extends Service implements SensorEventListener {
     private static final int sampleBinSize = 32;
 
     dataService sensorService;
+    dataServiceWiFi mWifiService;
 
     public NthSense() {
 
@@ -64,6 +65,9 @@ public class NthSense extends Service implements SensorEventListener {
 
         Intent intent = new Intent(this, dataService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
+        intent = new Intent(this, dataServiceWiFi.class);
+        bindService(intent, mConnectionWifi, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -106,6 +110,7 @@ public class NthSense extends Service implements SensorEventListener {
     public void onDestroy() {
         mSensorManager.unregisterListener(this);
         unbindService(mConnection);
+        unbindService(mConnectionWifi);
         super.onDestroy();
     }
 
@@ -136,6 +141,20 @@ public class NthSense extends Service implements SensorEventListener {
         public void onServiceConnected(ComponentName className, IBinder service) {
             dataService.dataBinder binder = (dataService.dataBinder) service;
             sensorService = binder.getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+
+        }
+    };
+
+    private ServiceConnection mConnectionWifi = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            dataServiceWiFi.dataBinder binder = (dataServiceWiFi.dataBinder) service;
+            mWifiService = binder.getService();
         }
 
         @Override

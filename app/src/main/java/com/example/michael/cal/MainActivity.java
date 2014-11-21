@@ -57,7 +57,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
     CalNsdManager mNsdManager;
     CalNsdConnection mConnection;
-    dataServiceWiFi mWifiService;
 
     private Handler mUpdateHandler;
     @Override
@@ -82,9 +81,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
             }
         };
         getGoogleAccountEmail();
-
-        Intent intent = new Intent(this, dataServiceWiFi.class);
-        bindService(intent, mConnectionWifi, Context.BIND_AUTO_CREATE);
 
         mConnection = new CalNsdConnection(mUpdateHandler);
 
@@ -229,7 +225,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
     protected void onDestroy() {
        // mNsdManager.tearDown();
        // mConnection.tearDown();
-        unbindService(mConnectionWifi);
         super.onDestroy();
     }
 
@@ -279,17 +274,5 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
         startActivity(intent);
         finish();
     }
-    private ServiceConnection mConnectionWifi = new ServiceConnection() {
 
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            dataServiceWiFi.dataBinder binder = (dataServiceWiFi.dataBinder) service;
-            mWifiService = binder.getService();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-
-        }
-    };
 }

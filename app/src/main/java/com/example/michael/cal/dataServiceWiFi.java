@@ -32,6 +32,8 @@ public class dataServiceWiFi extends Service {
     WifiManager mWifiManager;
     WifiScanReceiver mWifiScanReceiver;
 
+    int roomID=0;
+
     private final int numSeconds = 15;
 
     public dataServiceWiFi() {
@@ -129,6 +131,10 @@ public class dataServiceWiFi extends Service {
             }
         }
         return ja;
+    }
+
+    public void setRoomId(int id){
+        this.roomID = id;
     }
 
     class WifiScanReceiver extends BroadcastReceiver {

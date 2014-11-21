@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ToggleButton;
 import android.os.IBinder;
 
@@ -20,9 +21,11 @@ public class TrainingFragment extends PlaceholderFragment {
 
     private ToggleButton mTakingDataButton;
     private ToggleButton mWalkButton;
+    private Button mNewRoomButton;
     boolean bound = false;
 
     NthSense sensorService;
+    dataServiceWiFi mWifiService;
 
     public static TrainingFragment newInstance(int sectionNumber) {
         TrainingFragment fragment = new TrainingFragment();
@@ -38,6 +41,7 @@ public class TrainingFragment extends PlaceholderFragment {
 
         mTakingDataButton = (ToggleButton) rootView.findViewById(R.id.take_data1);
         mWalkButton = (ToggleButton) rootView.findViewById(R.id.walkingToggle1);
+        mNewRoomButton = (Button) rootView.findViewById(R.id.room);
 
         mTakingDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,6 +57,13 @@ public class TrainingFragment extends PlaceholderFragment {
             }
         });
 
+        mNewRoomButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mWifiService.setRoomId(randomNumber());
+            }
+        });
+
         return rootView;
     }
 
@@ -61,12 +72,15 @@ public class TrainingFragment extends PlaceholderFragment {
         super.onStart();
         Intent intent = new Intent(getActivity(), NthSense.class);
         getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        intent = new Intent(getActivity(), dataServiceWiFi.class);
+        getActivity().bindService(intent, mConnectionWifi, Context.BIND_AUTO_CREATE);
         bound=true;
     }
 
     public void onDestroy() {
         if(bound) {                                                                                 //Michael claims "possibly dangerous" DO NOT STORE NEAR OPEN FLAMES
             getActivity().unbindService(mConnection);
+            getActivity().unbindService(mConnectionWifi);
             bound = false;
         }
         super.onDestroy();
@@ -77,12 +91,31 @@ public class TrainingFragment extends PlaceholderFragment {
         super.onSaveInstanceState(outState);
     }
 
+    private int randomNumber(){
+        return (int) (Math.random()*2000);
+    }
+
+
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             NthSense.NthBinder binder = (NthSense.NthBinder) service;
             sensorService = binder.getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+
+        }
+    };
+
+    private ServiceConnection mConnectionWifi = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            dataServiceWiFi.dataBinder binder = (dataServiceWiFi.dataBinder) service;
+            mWifiService = binder.getService();
         }
 
         @Override

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#33B5E5"
-    >
+    android:id="@+id/">
 
     <ToggleButton
         android:layout_width="match_parent"
@@ -26,4 +26,13 @@
         android:layout_marginBottom="38dp"
         android:textOff="Not Walking"
         android:textOn="Is Walking" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Room"
+        android:id="@+id/room"
+        android:layout_above="@+id/walkingToggle1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="55dp" />
 </RelativeLayout>
