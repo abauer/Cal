@@ -92,7 +92,6 @@ public class NthSense extends Service implements SensorEventListener {
 
         long timestamp = System.currentTimeMillis();
         calSqlAdapter.insertData(new CalSQLObj(x,y,z,proximityVal,lux,d_isWalking,d_isTrainingData,timestamp)); //Insert data into local db
-
         sampleCount = (sampleCount + 1) % sampleBinSize;                                            //Package N samples and automatically send to server
 
         if(is_window_filled()) sensorService.submitData();
