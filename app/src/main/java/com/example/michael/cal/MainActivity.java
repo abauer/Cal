@@ -55,8 +55,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
     }
     public static final String TAG = "CalNsd";
 
-    CalNsdManager mNsdManager;
-    CalNsdConnection mConnection;
+    //CalNsdManager mNsdManager;
+   // CalNsdConnection mConnection;
 
     private Handler mUpdateHandler;
     @Override
@@ -82,7 +82,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
         };
         getGoogleAccountEmail();
 
-        mConnection = new CalNsdConnection(mUpdateHandler);
+      //  mConnection = new CalNsdConnection(mUpdateHandler);
 
        // mNsdManager = new CalNsdManager(this);
        // mNsdManager.initializeNsd();
@@ -181,43 +181,43 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
                 do_connect();
                 return true;
             case R.id.action_send:
-                mConnection.sendMessage(GoogleAccountEmail);
+                //mConnection.sendMessage(GoogleAccountEmail);
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     public void do_advertise() {
-        if(mConnection.getLocalPort() > -1) {
-            mNsdManager.registerService(mConnection.getLocalPort());
-        }
-        else
-            Log.d(TAG, "ServerSocket isn't bound.");
+      //  if(mConnection.getLocalPort() > -1) {
+        //    mNsdManager.registerService(mConnection.getLocalPort());
+       // }
+       // else
+        //    Log.d(TAG, "ServerSocket isn't bound.");
     }
     public void do_discover() {
-        mNsdManager.discoverServices();
+    //    mNsdManager.discoverServices();
     }
     public void do_connect() {
-        NsdServiceInfo service = mNsdManager.getChosenServiceInfo();
-        if (service != null) {
-            Log.d(TAG, "Connecting. Sending " + GoogleAccountEmail);
-            mConnection.connectToServer(service.getHost(), service.getPort());
-            mConnection.sendMessage(GoogleAccountEmail);
-        }
-        else
-            Log.d(TAG, "No service to connect to!");
+      //  NsdServiceInfo service = mNsdManager.getChosenServiceInfo();
+        //if (service != null) {
+         //   Log.d(TAG, "Connecting. Sending " + GoogleAccountEmail);
+          //  mConnection.connectToServer(service.getHost(), service.getPort());
+          //  mConnection.sendMessage(GoogleAccountEmail);
+      //  }
+      //  else
+      //      Log.d(TAG, "No service to connect to!");
     }
     @Override
     protected void onResume(){
         super.onResume();
-        if(mNsdManager != null)
-            mNsdManager.discoverServices();
+     //   if(mNsdManager != null)
+      //      mNsdManager.discoverServices();
     }
 
     @Override
     protected void onPause(){
-        if(mNsdManager != null)
-            mNsdManager.stopDiscovery();
+       // if(mNsdManager != null)
+        //    mNsdManager.stopDiscovery();
         super.onPause();
     }
 
